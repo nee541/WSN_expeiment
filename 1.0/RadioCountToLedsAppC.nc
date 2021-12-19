@@ -18,7 +18,7 @@ implementation {
   components new AMReceiverC(AM_RADIO_COUNT_MSG);
   components new TimerMilliC();
   components ActiveMessageC;
-  cmponents AMPacket;
+//  cmponents AMPacket;
   
   App.Boot -> MainC.Boot;
   

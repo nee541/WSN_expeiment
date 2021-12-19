@@ -5,7 +5,7 @@ import sys
 out = sys.stdout
 
 # Number of nodes in the simulated network is 3
-number_of_nodes = 3
+number_of_nodes = 4
 
 t = Tossim([])
 m = t.mac()
@@ -64,11 +64,11 @@ for line in noise:
         for i in range(number_of_nodes):
             t.getNode(i).addNoiseTraceReading(val)
 
-for i in range(1,3):
+for i in range(1,4):
     print "Creating noise model for ",i;
     t.getNode(i).createNoiseModel()
 
 
 # Simulation time is set to 9999
-for i in range(19999):
+for i in range(1099):
     t.runNextEvent()
