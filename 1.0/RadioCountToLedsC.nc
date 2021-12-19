@@ -101,27 +101,27 @@ implementation
      {
        if (TOS_NODE_ID == 2 || TOS_NODE_ID == 3)
        {
-         radio_count_msg_t* mesg = (radio_count_msg_t*)payload;
-         call Leds.set(mesg->counter);
-         dbg("RadioRec","[%s] Message successfully received at node 2\n",sim_time_string());
-         dbg_clear ("Pkg",">>>Pack \n \t Payload length %hhu \n", call Packet.payloadLength (&pkt));
-  //       dbg_clear ("Pkg","\t Source: %hhu \n", call AMPacket.source (&pkt));
-    //     dbg_clear ("Pkg","\t Destination: %hhu \n", call AMPacket.destination (&pkt));
-//         dbg_clear ("Pkg","\t AM Type: %hhu \n", call AMPacket.type (&pkt));
-         dbg_clear ("Pkg","\t\t Payload \n");
-         dbg_clear ("Pkg","\t\t node_id:  %hhu \n", mesg->node_id);
-         dbg_clear ("Pkg","\t\t msg_number: %hhu \n", mesg->counter);
-         dbg_clear ("Pkg","\t\t value: %hhu \n", mesg->value);
-         dbg_clear ("Pkg","\n");
+        radio_count_msg_t* mesg = (radio_count_msg_t*)payload;
+        call Leds.set(mesg->counter);
+        dbg("RadioRec","[%s] Message successfully received at node 2\n",sim_time_string());
+        dbg_clear ("Pkg",">>>Pack \n \t Payload length %hhu \n", call Packet.payloadLength (&pkt));
+        dbg_clear ("Pkg","\t Source: %hhu \n", call AMPacket.source (&pkt));
+        dbg_clear ("Pkg","\t Destination: %hhu \n", call AMPacket.destination (&pkt));
+        dbg_clear ("Pkg","\t AM Type: %hhu \n", call AMPacket.type (&pkt));
+        dbg_clear ("Pkg","\t\t Payload \n");
+        dbg_clear ("Pkg","\t\t node_id:  %hhu \n", mesg->node_id);
+        dbg_clear ("Pkg","\t\t msg_number: %hhu \n", mesg->counter);
+        dbg_clear ("Pkg","\t\t value: %hhu \n", mesg->value);
+        dbg_clear ("Pkg","\n");
        }
        else
        {
-         dbg("RadioRec","[%s] Error encountered during reception! \n", sim_time_string());
+        dbg("RadioRec","[%s] Error encountered during reception! \n", sim_time_string());
        }
      }
      else
      {
-       dbg("RadioRec","[%s] Error encountered during reception! \n", sim_time_string());
+      dbg("RadioRec","[%s] Error encountered during reception! \n", sim_time_string());
      }
      return msg;
    }
