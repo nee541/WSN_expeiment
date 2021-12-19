@@ -21,7 +21,7 @@ module RadioCountToLedsC @safe() {
     interface Timer<TMilli> as MilliTimer;
     interface SplitControl as AMControl;
     interface Packet;
-   //  interface AMPacket;
+    interface AMPacket;
   }
 }
 
@@ -31,9 +31,7 @@ implementation
    message_t pkt;
    uint16_t counter = 0;
 
-   task void SendMsg1_2();
-   task void SendMsg2_Radio();
-   task void Intercept();
+   task void SendMsg();
 
 
    //********************Boot Interface****************//
@@ -51,7 +49,7 @@ implementation
         dbg("Radio","Radio is on!\n");
         call MilliTimer.startPeriodic(TIMER_PERIOD_MILLI);
      }
-     else
+      else
       {
           call AMControl.start();
       }
@@ -65,83 +63,34 @@ implementation
    //************************MilliTimer Interface********************//
    event void MilliTimer.fired()
    {
-     post SendMsg1_2();
+     post SendMsg();
    }
 
    //***********************Task1 Interface*************************//
-   task void SendMsg1_2()
+   task void SendMsg()
    {
       counter++;
       if (!busy)
-       {
-         radio_count_msg_t* mesg = (radio_count_msg_t*)(call Packet.getPayload(&pkt, sizeof (radio_count_msg_t)));
-         mesg->node_id = TOS_NODE_ID;
+      {
+        radio_count_msg_t* mesg = (radio_count_msg_t*)(call Packet.getPayload(&pkt, sizeof (radio_count_msg_t)));
+        mesg->node_id = TOS_NODE_ID;
         mesg->counter = counter;
  
-       if (TOS_NODE_ID == 1)
+        if (TOS_NODE_ID == 1)
         {
-        dbg ("RadioSend","Sending a message to node 2 \n");
+          dbg ("RadioSend","[%s] Sending a message to node 2 \n", sim_time_string());
           if (call AMSend.send(2, &pkt, sizeof(radio_count_msg_t)) == SUCCESS)
           {
             busy = TRUE;
           }
         }
         else if (TOS_NODE_ID == 2) {
-        dbg ("RadioSend","Sending a message to node 3 \n");
+          dbg ("RadioSend","[%s] Sending a message to node 3 \n", sim_time_string());
           if (call AMSend.send(3, &pkt, sizeof(radio_count_msg_t)) == SUCCESS)
-            {
-        busy = TRUE;
-    }
-           
-        }
-     }
-   }
-
-   //***********************Task2 Interface*************************//
-   task void SendMsg2_Radio()
-   {
-     counter++;
-     //call Leds.set(counter);
-   if (!busy )
-     {
-       if (TOS_NODE_ID == 2)
-        {
-        radio_count_msg_t* mesg = (radio_count_msg_t*)(call Packet.getPayload(&pkt, sizeof (radio_count_msg_t)));
-        mesg->node_id = TOS_NODE_ID;
-        mesg->counter = counter;
-        dbg ("RadioSend","Sending a message to node 3 \n");
-        if (call AMSend.send(3, &pkt, sizeof(radio_count_msg_t)) == SUCCESS)
-        {
-  //        dbg_clear ("Pkg",">>>Pack \n \t Payload length %hhu \n", call Packet.payloadLength (&pkt));
-  //        dbg_clear ("Pkg","\t Source: %hhu \n", call AMPacket.source (&pkt));
-    //      dbg_clear ("Pkg","\t Destination: %hhu \n", call AMPacket.destination (&pkt));
-      //    dbg_clear ("Pkg","\t AM Type: %hhu \n", call AMPacket.type (&pkt));
-//          dbg_clear ("Pkg","\t\t Payload \n");
-  //        dbg_clear ("Pkg","\t\t node_id:  %hhu \n", mesg->node_id);
- //         dbg_clear ("Pkg","\t\t msg_number: %hhu \n", mesg->counter);
-        //  dbg_clear ("Pkg","\t\t value: %hhu \n", mesg->value);// call AMPacket.source (&pkt));
-//          dbg_clear ("Pkg","\n");// call AMPacket.source (&pkt));
-          busy = TRUE;
-        }
-        }
-     }
-   }
-
-   ///***********************Intercept Interface*************************//
-   task void Intercept()
-   {
-  //   counter++;
-     //call Leds.set(counter);
-   if (!busy && TOS_NODE_ID == 3)
-     {
-        radio_count_msg_t* mesg = (radio_count_msg_t*)(call Packet.getPayload(&pkt, sizeof (radio_count_msg_t)));
-        mesg->node_id = TOS_NODE_ID;
-        mesg->counter = counter;
-        dbg ("RadioSend","Sending a corrupted message to node 1 \n");
-          if (call AMSend.send(1, &pkt, sizeof(radio_count_msg_t)) == SUCCESS)
           {
-          busy = TRUE;
-          }
+            busy = TRUE;
+          } 
+        }
      }
    }
 
@@ -154,8 +103,7 @@ implementation
        {
          radio_count_msg_t* mesg = (radio_count_msg_t*)payload;
          call Leds.set(mesg->counter);
-//         post SendMsg2_Radio();
-         dbg("RadioRec","Message successfully received at node 2 at time %s \n",sim_time_string());
+         dbg("RadioRec","[%s] Message successfully received at node 2\n",sim_time_string());
          dbg_clear ("Pkg",">>>Pack \n \t Payload length %hhu \n", call Packet.payloadLength (&pkt));
   //       dbg_clear ("Pkg","\t Source: %hhu \n", call AMPacket.source (&pkt));
     //     dbg_clear ("Pkg","\t Destination: %hhu \n", call AMPacket.destination (&pkt));
@@ -166,29 +114,14 @@ implementation
          dbg_clear ("Pkg","\t\t value: %hhu \n", mesg->value);
          dbg_clear ("Pkg","\n");
        }
-       else if (TOS_NODE_ID == 1)
-       {
-         radio_count_msg_t* mesg = (radio_count_msg_t*)payload;
-         call Leds.set(mesg->counter);
-         dbg("RadioRec","Message successfully received at node 1 at time %s \n",sim_time_string());
-         post SendMsg1_2();
-         dbg("RadioRec","Message received at node 1 at time %s \n",sim_time_string());
-      } 
-       else if (TOS_NODE_ID == 3)
-       {
-         radio_count_msg_t* mesg = (radio_count_msg_t*)payload;
-         call Leds.set(mesg->counter);
-         dbg("RadioRec","Message is captured by adversary at time %s \n",sim_time_string());
-//         post Intercept();
-       }
        else
        {
-         dbg("RadioRec","Error encountered during reception! \n");
+         dbg("RadioRec","[%s] Error encountered during reception! \n", sim_time_string());
        }
      }
      else
      {
-       dbg("RadioRec","Error encountered during reception! \n");
+       dbg("RadioRec","[%s] Error encountered during reception! \n", sim_time_string());
      }
      return msg;
    }
@@ -196,37 +129,31 @@ implementation
    ///***********************Senddone Event Interface*************************//
    event void AMSend.sendDone(message_t* msg, error_t error)
    {
+      busy = FALSE;
       if (&pkt == msg&&error == SUCCESS)
       {
         if (TOS_NODE_ID == 1)
         {
-          dbg("RadioSend","Transmitter ID is %hhu \n",TOS_NODE_ID);
-          dbg("RadioSend","Packet has been successfully transmitted to node 2 at %s! \n", sim_time_string());
-          busy = FALSE;
+          dbg("RadioSend","[%s] Packet has been successfully transmitted to node 2  \n", sim_time_string());
         // call MilliTimer.stop();
         }
         else if (TOS_NODE_ID == 2)
         {
-          dbg("RadioSend","Transmitter ID IS %hhu \n",TOS_NODE_ID);
-          dbg("RadioSend","Packet has been successfully transmitted to node 3 at %s! \n", sim_time_string());
-          busy = FALSE;
+          dbg("RadioSend","[%s] Packet has been successfully transmitted to node 3 \n", sim_time_string());
         }
         else if (TOS_NODE_ID == 3)
         {
-          dbg("RadioSend","Transmitter ID IS %hhu \n",TOS_NODE_ID);
-          dbg("RadioSend","Packet has been successfully transmitted to node 2! \n");
-          busy = FALSE; 
+          dbg("RadioSend","[%s] Packet has been successfully transmitted to node 2! \n", sim_time_string());
         }
         else
         {
           dbg("RadioSend","Error!Transmitter ID is not present! \n");
           dbg("RadioSend","Node ID is %hhu  \n",TOS_NODE_ID);
-          post SendMsg2_Radio();
         }
       }
       else
       {
-         dbg("RadioSend","Error encountered during the transmission! \n");
+        dbg("RadioSend","Error encountered during the transmission, counter is %hu! \n", counter);
       }
    }
  }
