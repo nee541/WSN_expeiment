@@ -36,11 +36,15 @@ stream = {
                          value: 0
 ```
 
-Payload 代表自定义的数据
-AM Adress 代表当前节点的地址
-Source 代表数据包发送方的地址
-Destination 代表数据包接收方地址
-AM Type 代表自定义的数据包类型(240是随便定的)
-node_id 代表发送方的node id
-msg_number 代表发送发发送的包的序列号，所以不同发送方可以有相同的序列号
-value 自定义的value(忘了删了，没有特殊含义)
+- Payload 代表自定义的数据
+  - node_id 代表发送方的node id
+  - msg_number 代表发送发发送的包的序列号，所以不同发送方可以有相同的序列号
+  - value 自定义的value(忘了删了，没有特殊含义)
+
+- AM Adress 代表当前节点的地址
+
+- Source 代表数据包发送方的地址
+
+- Destination 代表数据包接收方地址
+
+- AM Type 代表自定义的数据包类型(240是随便定的)
