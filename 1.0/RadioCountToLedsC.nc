@@ -1,3 +1,4 @@
+#include "AM.h"
 #include "Timer.h"
 #include "RadioCountToLeds.h"
  
@@ -103,15 +104,15 @@ implementation
        {
         radio_count_msg_t* mesg = (radio_count_msg_t*)payload;
         call Leds.set(mesg->counter);
-        dbg("RadioRec","[%s] Message successfully received at node 2\n",sim_time_string());
-        dbg_clear ("Pkg",">>>Pack \n \t Payload length %hhu \n", call Packet.payloadLength (&pkt));
-        dbg_clear ("Pkg","\t Source: %hhu \n", call AMPacket.source (&pkt));
-        dbg_clear ("Pkg","\t Destination: %hhu \n", call AMPacket.destination (&pkt));
-        dbg_clear ("Pkg","\t AM Type: %hhu \n", call AMPacket.type (&pkt));
-        dbg_clear ("Pkg","\t\t Payload \n");
-        dbg_clear ("Pkg","\t\t node_id:  %hhu \n", mesg->node_id);
-        dbg_clear ("Pkg","\t\t msg_number: %hhu \n", mesg->counter);
-        dbg_clear ("Pkg","\t\t value: %hhu \n", mesg->value);
+        dbg("RadioRec","[%s] Message successfully received at node %hhu\n",sim_time_string(), TOS_NODE_ID);
+        dbg_clear ("Pkg","\t>>>Pack \n \t\t Payload length %hhu \n", call Packet.payloadLength (msg));
+        dbg_clear ("Pkg","\t\t AM Adress: %hhu \n", call AMPacket.address ());
+        dbg_clear ("Pkg","\t\t Source: %hhu \n", call AMPacket.source (msg));
+        dbg_clear ("Pkg","\t\t Destination: %hhu \n", call AMPacket.destination (msg));
+        dbg_clear ("Pkg","\t\t AM Type: %hhu \n", call AMPacket.type (msg));
+        dbg_clear ("Pkg","\t\t\t Payload \n");
+        dbg_clear ("Pkg","\t\t\t node_id:  %hhu \n", mesg->node_id);
+        dbg_clear ("Pkg","\t\t\t value: %hhu \n", mesg->value);
         dbg_clear ("Pkg","\n");
        }
        else
